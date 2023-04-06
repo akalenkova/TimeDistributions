@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy import stats
 import statsmodels.api as sm
-from itertools import groupby
+from itertools import groupby #cant find
 import gamma_distribution
 import numpy as np
 import seaborn as sns
@@ -103,13 +103,15 @@ def build_semi_markov(dfg, multi_gausses):
 
 variant = xes_importer.Variants.ITERPARSE
 parameters = {variant.value.Parameters.TIMESTAMP_SORT: True}
-log = xes_importer.apply('/Users/a1230101//Documents/GitHub/TimeDistributions/logs/bpi_challenge_2013_incidents.xes', 
+log = xes_importer.apply('/Users/alexhu/Documents/Github/TimeDistributions/logs/bpi_challenge_2013_incidents.xes', 
     variant=variant, parameters=parameters)
 for k in [1,2,3,4]:
     start = time.time()
     log_for_discovery = deepcopy(log)
     times_dictionary = {}
     log_processed = log_parser.prepare_log(log_for_discovery, k)
+
+    # the initial discovery
     dfg, start_activities, end_activities = discover_dfg(log_processed)
         #for s in start_activities.keys():
         #    start_activities[s] = 0
@@ -122,6 +124,7 @@ for k in [1,2,3,4]:
     """
     Fitting using Gaussian KDE
     """
+    # enchancement
     mult_gausses = {}
     #fig = plt.figure(figsize=(10,220))
     i = 1
@@ -165,10 +168,13 @@ for k in [1,2,3,4]:
         #print(mult_gausses)
         i += 1
 
-
+    # builds the new markov chain
     semi_markov = build_semi_markov(dfg, mult_gausses)
     states = deepcopy(semi_markov.states)
     i = 1
+
+    # removes every node
+    # change the order of removal
     for state in states:
         #if str(state) != "Queued":
         #    continue
@@ -176,6 +182,8 @@ for k in [1,2,3,4]:
         semi_markov.reduce_node(state, label, log)
         i += 1  
 
+
+    # outputs the results
     print("Number of transitions: " + str(len(semi_markov.transitions)))
     for transition in semi_markov.transitions:
         if transition[0] == 'start':

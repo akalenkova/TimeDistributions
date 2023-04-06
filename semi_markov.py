@@ -33,6 +33,7 @@ class SemiMarkov:
 
     
 
+    # This is the code that I need to touch 
     def reduce_node(self, state, label, log):
         #print("Removing state " + str(state))
         if ((state == 'start') or (state == 'end')):
