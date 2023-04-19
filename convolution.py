@@ -61,6 +61,16 @@ def mult_gauss_convolution(mult1, mult2):
             mult.probabilities.append(mult1.probabilities[i]*mult2.probabilities[j])
             mult.gaussians.append(gauss_convolution(mult1.gaussians[i],mult2.gaussians[j]))
     mult.unify_small_prob_gauss(thershold)
+
+    #   size = len(mult1.probabilities) * len(mult2.probabilities)
+    # index = 0
+    # mult = MultiGauss([] * size ,[] * size)
+    # for i in range(len(mult1.probabilities)):
+    #     for j in range(len(mult2.probabilities)):
+    #         mult.probabilities[index] = mult1.probabilities[i]*mult2.probabilities[j]
+    #         mult.gaussians[index] = gauss_convolution(mult1.gaussians[i],mult2.gaussians[j])
+    #         index += 1
+    # mult.unify_small_prob_gauss(thershold)
 #    print("=======================")
 #    print(mult.calculate_mean())
 #    print(mult.calculate_mode())

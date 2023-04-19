@@ -30,10 +30,22 @@ class SemiMarkov:
         self.states = states 
         # Each transition is a tuple: (from, to, probability, multi Gauss)
         self.transitions = transitions 
-
     
+    def reduce_all(self, states, log):
+        for i in range(1,len(states)) :
+            cheapest_state = ""
+            cheapest_cost = float('inf')
+            for state in states :
+                cost = self.get_in_transitions_len(state) * self.get_out_transitions_len(state)
+                if cost < cheapest_cost :
+                    cheapest_cost = cost
+                    cheapest_state = state
+            # print("Cheapest state is : " + cheapest_state)
+            # print("cost is : " + str(cheapest_cost))
+            label = "State " + str(i) + " out of " + str(len(states))
+            self.reduce_node(cheapest_state, label, log)
+            states.remove(cheapest_state)
 
-    # This is the code that I need to touch 
     def reduce_node(self, state, label, log):
         #print("Removing state " + str(state))
         if ((state == 'start') or (state == 'end')):
@@ -64,7 +76,7 @@ class SemiMarkov:
                 for out_transition in out_transitions:
                     out_state = out_transition[1]
                     if in_state != out_state:
-                        #print("Adding transiton from " + str(in_state) + " to " + str(out_state))
+                        # print("Adding transiton from " + str(in_state) + " to " + str(out_state))
                         i += 1
                         p = self.get_probability(in_state, out_state)
                         time = self.get_time(in_state, out_state)
@@ -162,6 +174,20 @@ class SemiMarkov:
             if (transition[0] == state) and (transition[1] != state):
                 out_transitions.add(transition)
         return out_transitions
+
+    def get_in_transitions_len(self, state):
+        in_transitions = set()
+        for transition in self.transitions:
+            if (transition[1] == state) and (transition[0] != state):
+                in_transitions.add(transition)
+        return len(in_transitions)
+    
+    def get_out_transitions_len(self, state):
+        out_transitions = set()
+        for transition in self.transitions:
+            if (transition[0] == state) and (transition[1] != state):
+                out_transitions.add(transition)
+        return len(out_transitions)
  
     def get_probability(self, state1, state2):
         for transition in self.transitions:

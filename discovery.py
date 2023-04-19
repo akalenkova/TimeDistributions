@@ -21,6 +21,8 @@ from copy import deepcopy
 from mult_gauss import MultiGauss
 from gauss import Gauss
 from semi_markov import SemiMarkov
+import heapq
+
 
 def extract_times():
     for trace in log:
@@ -173,15 +175,21 @@ for k in [1,2,3,4]:
     states = deepcopy(semi_markov.states)
     i = 1
 
-    # removes every node
-    # change the order of removal
-    for state in states:
-        #if str(state) != "Queued":
-        #    continue
-        label = "State " + str(i) + " out of " + str(len(states))
-        semi_markov.reduce_node(state, label, log)
-        i += 1  
 
+    semi_markov.reduce_all(states, log)
+
+    # for state in states:
+    #     #if str(state) != "Queued":
+    #     #    continue
+    #     # print("states")
+    #     # print(states)
+    #     # print("transitions")
+    #     # print(semi_markov.transitions)
+    #     # print("\n\n\n")
+    #     label = "State " + str(i) + " out of " + str(len(states))
+
+    #     semi_markov.reduce_node(state, label, log)
+    #     i += 1  
 
     # outputs the results
     print("Number of transitions: " + str(len(semi_markov.transitions)))

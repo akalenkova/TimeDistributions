@@ -1,0 +1,32 @@
+DFG is built
+Number of transitions: 2
+('start', 'end', 0.36000000000000004, <mult_gauss.MultiGauss object at 0x15f713f90>)
+
+Overall: ---------------
+7168.8327044203315
+Execution time for k=1
+20.073320865631104
+DFG is built
+Number of transitions: 2
+('start', 'end', 0.5781249999999999, <mult_gauss.MultiGauss object at 0x15f765ad0>)
+
+Overall: ---------------
+9849.635068574014
+Execution time for k=2
+10.03696584701538
+DFG is built
+Number of transitions: 2
+('start', 'end', 0.4444444444444444, <mult_gauss.MultiGauss object at 0x15f765f50>)
+
+Overall: ---------------
+17522.750302814522
+Execution time for k=3
+10.046260833740234
+DFG is built
+Number of transitions: 2
+('start', 'end', 0.75, <mult_gauss.MultiGauss object at 0x15f767310>)
+
+Overall: ---------------
+17586.00004148513
+Execution time for k=4
+10.054273128509521
