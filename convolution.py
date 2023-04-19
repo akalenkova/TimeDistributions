@@ -55,11 +55,14 @@ def mult_gauss_convolution(mult1, mult2):
 #    print("Peaks:")
 #    print(mult1.calculate_peak())
 #    print(mult2.calculate_peak())
-    mult = MultiGauss([],[])
+    size = len(mult1.probabilities) * len(mult2.probabilities)
+    idx = 0
+    mult = MultiGauss([None] * size ,[None]  * size)
     for i in range(len(mult1.probabilities)):
         for j in range(len(mult2.probabilities)):
-            mult.probabilities.append(mult1.probabilities[i]*mult2.probabilities[j])
-            mult.gaussians.append(gauss_convolution(mult1.gaussians[i],mult2.gaussians[j]))
+            mult.probabilities[idx] = (mult1.probabilities[i]*mult2.probabilities[j])
+            mult.gaussians[idx] =(gauss_convolution(mult1.gaussians[i],mult2.gaussians[j]))
+            idx += 1
     mult.unify_small_prob_gauss(thershold)
 
     #   size = len(mult1.probabilities) * len(mult2.probabilities)
