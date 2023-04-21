@@ -18,10 +18,10 @@ Discere convolution of two functions f1 and f2 represented as lists
 """
 
 def discrete_convolution(f1, f2):
-    conv = []
+    conv = [None] * (len(f1) *len(f2)) 
     for i in range(len(f1)):
         for j in range(len(f2)):
-            conv.append(f1[i]+f2[j])
+            conv[i] = f1[i]+f2[j]
     return conv
 
 """
@@ -55,9 +55,9 @@ def mult_gauss_convolution(mult1, mult2):
 #    print("Peaks:")
 #    print(mult1.calculate_peak())
 #    print(mult2.calculate_peak())
-    size = len(mult1.probabilities) * len(mult2.probabilities)
+    total_length = len(mult1.probabilities) * len(mult2.probabilities)
     idx = 0
-    mult = MultiGauss([None] * size ,[None]  * size)
+    mult = MultiGauss([None] * total_length ,[None]  * total_length)
     for i in range(len(mult1.probabilities)):
         for j in range(len(mult2.probabilities)):
             mult.probabilities[idx] = (mult1.probabilities[i]*mult2.probabilities[j])
@@ -92,16 +92,22 @@ def mult_gauss_self_convolution(mult1, k):
     return mult
 
 def mult_gauss_sum(mult1, mult2, p1, p2):
-    sum = MultiGauss([],[])
+    total_length = len(mult1.probabilities) + len(mult2.probabilities)
+    idx = 0
+    sum = MultiGauss([None] * total_length,[None] * total_length)
     for i in range(len(mult1.probabilities)):
         if p1 > 0:
-            sum.probabilities.append(p1*mult1.probabilities[i])
-            sum.gaussians.append(mult1.gaussians[i])
+            sum.probabilities[idx] = p1*mult1.probabilities[i]
+            sum.gaussians[idx] = mult1.gaussians[i]
+            idx += 1
+
     
     for i in range(len(mult2.probabilities)):
         if p2 > 0:
-            sum.probabilities.append(p2*mult2.probabilities[i])
-            sum.gaussians.append(mult2.gaussians[i])
+            sum.probabilities[idx] = p2*mult2.probabilities[i]
+            sum.gaussians[idx] = mult2.gaussians[i]
+            idx += 1
+        
     
     sum.unify_small_prob_gauss(thershold)
     return sum

@@ -44,6 +44,8 @@ class SemiMarkov:
             # print("cost is : " + str(cheapest_cost))
             label = "State " + str(i) + " out of " + str(len(states))
             self.reduce_node(cheapest_state, label, log)
+
+            # Update for each node the number of input and output nodes
             states.remove(cheapest_state)
 
     def reduce_node(self, state, label, log):
@@ -80,34 +82,15 @@ class SemiMarkov:
                         i += 1
                         p = self.get_probability(in_state, out_state)
                         time = self.get_time(in_state, out_state)
-                        #print("In probability:")
-                        #print(self.get_probability(in_state,state))
-                        #print("Out probability:")
-                        #print(self.get_probability(state,out_state))
-                        #print("Self probability:")
-                        #print(self.get_probability(state,state))
                         new_p = self.get_probability(in_state,state)*self.get_probability(state,out_state)/(1-self.get_probability(state,state))
                         all_p = p + new_p
+                        
                         m1 = self.get_time(in_state, state)
-                        #print("First mean time:")
-                        #print(m1.calculate_mean())
                         m2 = self.get_time(state, out_state)
-                        #print("Second mean time:")
-                        #print(m2.calculate_mean())
                         new_time = mult_gauss_convolution(m1,self_loop_time)
                         new_time = mult_gauss_convolution(new_time, m2)
-                        #print("Old time:")
-                        #print(time.calculate_mean())
-                        #print("New time:")
-                        #print(new_time.calculate_mean())
-                        #print("Old probaility:")
-                        #print(p)
-                        #print("New probaility:")
-                        #print(new_p)
                         all_time = mult_gauss_sum(time, new_time, p/all_p, new_p/all_p)
-                        #print("All mean time:")
-                        #print(all_time.calculate_mean())
-
+                  
                         # Remove old transition
                         transition_to_remove = set()
                         for transition in self.transitions:
@@ -118,16 +101,7 @@ class SemiMarkov:
                             
                         # Add new transition
                         self.transitions.add((in_state, out_state, all_p, all_time))
-
-#                        all_time.plot_mult_gauss(range(0,1000,1), str(in_state) + " " + str(out_state))
-                        #print("Sum of probabilitties:")
-                        #print(all_time.calculate_sum_probabilities())
-                        #print("Mean:")
-                        #print(all_time.calculate_mean())
                         mean_log_time = mean_time_between_events(in_state,out_state,[state],log)
-                        #print(mean_log_time)
-                        #plt.title(label=str(in_state) + " " + str(out_state))
-                        #plt.show()
 
             # Remove state
             transition_to_remove = set()
