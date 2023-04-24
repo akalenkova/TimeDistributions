@@ -21,7 +21,6 @@ from copy import deepcopy
 from mult_gauss import MultiGauss
 from gauss import Gauss
 from semi_markov import SemiMarkov
-import heapq
 
 
 def extract_times():
