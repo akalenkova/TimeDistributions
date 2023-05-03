@@ -25,34 +25,34 @@ def mean_time_between_events(e1,e2,skip_events,log):
             mean = 0
         return mean
 
-class Graph: 
-        
 
 class SemiMarkov:
     def __init__(self, states, transitions):
+        self.states = states
+        self.transitions = transitions
         self.graph = {state : {"out_transitions" : {}, "in_transitions" : {}} for state in states}
         for transition in transitions :
             print("Creating edge " + transition[0] + " -> " + transition[1])
-            self.adjacency_list[transition[0]]["out_transitions"][transition[1]] = transition
-            self.adjacency_list[transition[1]]["in_transitions"][transition[0]] = transition
+            self.graph[transition[0]]["out_transitions"][transition[1]] = transition
+            self.graph[transition[1]]["in_transitions"][transition[0]] = transition
     
-    def get_cheapest_node(self) : 
+    def get_cheapest_node(self,states) : 
         cheapest_state = ""
-        cheapest_cost = float('inf')
+        cheapest_cost = float("inf")
         for state in states :
             cost = self.get_computation_cost(state)
             if cost < cheapest_cost :
                 cheapest_cost = cost
-                cheapest_state = 
-                
+                cheapest_state = state
         return cheapest_state
 
     def reduce_all(self, states, log):
-
         for i in range(1,len(states)) :
-            cheapest_node = get_cheapest_node()
+            cheapest_node = self.get_cheapest_node(states)
+            states.remove(cheapest_node)
             label = "State " + str(i) + " out of " + str(len(states))
             self.reduce_node(cheapest_node, label, log)
+            self.graph.pop(cheapest_node)
         
 
     def reduce_node(self, state, label, log):
@@ -73,52 +73,56 @@ class SemiMarkov:
             for in_state, v in list(in_transitions.items()):
                 for out_state, vv in list(out_transitions.items()):
                     if in_state != out_state:
-                        # print(in_state)
-                        # print(out_state)
-                        # print("in_state : " + str(v))
-                        # print("out_state : " + str(vv))
+                        print("in_state : " + str(v))
+                        print("out_state : " + str(vv))
 
                         p = self.get_probability(in_state, out_state)
                         time = self.get_time(in_state, out_state)
-                        new_p = self.get_probability(in_state,state)*self.get_probability(state,out_state)/(1-self.get_probability(state,state))
-                        all_p = p + new_p
+
+                        in_state_to_state_prob = self.get_probability(in_state,state)
+                        state_to_out_state_prob = self.get_probability(state,out_state)
+                        state_to_state_prob = self.get_probability(state,state)
+
+                        print("in_state_to_state_prob : " + str(in_state_to_state_prob))
+                        print("state_to_out_state_prob : " + str(state_to_out_state_prob))
+                        print("state_to_state_prob : " + str(state_to_state_prob))
+
+                        new_prob = in_state_to_state_prob * state_to_out_state_prob/(1-state_to_state_prob)
+
+                        all_p = p + new_prob
 
                         print("p : " + str(p))
-                        print("new_p : " + str(new_p))
+                        print("new_prob : " + str(new_prob))
                         print("all_p : " + str(all_p))
                         m1 = self.get_time(in_state, state)
                         m2 = self.get_time(state, out_state)
                         new_time = mult_gauss_convolution(m1,self_loop_time)
                         new_time = mult_gauss_convolution(new_time, m2)
-                        all_time = mult_gauss_sum(time, new_time, p/all_p, new_p/all_p)
+                        all_time = mult_gauss_sum(time, new_time, p/all_p, new_prob/all_p)
 
                         # removing the inwards and outwards transitions
-                        self.remove_out_state_node(out_state, state)
-                        self.remove_in_state_node(in_state, state)
+                        self.remove_transition(state, out_state)
+                        self.remove_transition(in_state, state)
 
+                        new_transition = (in_state, out_state, all_p, all_time)
                         # Add new transition
-                        transition = (in_state, out_state, all_p, all_time)
-                        self.add_out_state_transition(in_state,out_state,transition)
-                        self.add_in_state_transition(out_state,in_state,transition)
+                        self.add_out_state_transition(in_state,out_state,new_transition)
+                        self.add_in_state_transition(out_state,in_state,new_transition)
                         mean_log_time = mean_time_between_events(in_state,out_state,[state],log)
-            self.graph.pop(state)
 
-    def remove_out_state_node(self, to_node, remove_node):
-        self.graph[to_node]["in_transition"].pop(remove_node)
+    def remove_transition(self, start, end):
+        if start != "start" and start != "end" and end != "start" and start != "start" :
+            self.graph[start]["out_transitions"].pop(end)
+            print("Removing out transition from " + start + " -> " +  end)
+        if end != "start" and end != "end" and start != "start" and start != "end" :
+            self.graph[end]["in_transitions"].pop(start)
+            print("Removing in transition from " + end + " -> " +  start)
 
-    def remove_in_state_node(self, from_node, remove_node):
-        self.graph[from_node]["out_transitions"].pop(remove_node)
+    def add_out_state_transition(self, from_state, to_state, new_transition):
+        self.graph[from_state]["out_transitions"][to_state] = new_transition
 
-    def add_out_state_transition(self, from_state, to_state, transition):
-        if(to_state in self.graph[out_state]["out_transitions"] ):
-            # perform merge
-        else :
-            self.graph[from_state]["out_transitions"][to_state] = transition
-
-    def add_in_state_transition(self, from_state, to_state , transition):
-        if(to_state in self.graph[out_state]["in_transition"]):
-            #perform merge
-        self.graph[from_state]["in_transition"][to_state] = transition
+    def add_in_state_transition(self, from_state, to_state ,new_transition):
+        self.graph[from_state]["in_transitions"][to_state] = new_transition
 
     def  calculate_self_loop_time(self, state, threshold):
         m1 = self.get_time(state, state)

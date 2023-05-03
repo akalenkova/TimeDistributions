@@ -104,9 +104,9 @@ def build_semi_markov(dfg, multi_gausses):
 
 variant = xes_importer.Variants.ITERPARSE
 parameters = {variant.value.Parameters.TIMESTAMP_SORT: True}
-log = xes_importer.apply('/Users/alexhu/Documents/Github/TimeDistributions/logs/bpi_challenge_2013_incidents.xes', 
+log = xes_importer.apply('/Users/alexhu/Documents/Github/TimeDistributions/logs/DomesticDeclarations.xes', 
     variant=variant, parameters=parameters)
-for k in [1,2,3,4]:
+for k in [1]:
     start = time.time()
     log_for_discovery = deepcopy(log)
     times_dictionary = {}
