@@ -103,7 +103,7 @@ def build_semi_markov(dfg, multi_gausses):
 
 variant = xes_importer.Variants.ITERPARSE
 parameters = {variant.value.Parameters.TIMESTAMP_SORT: True}
-log = xes_importer.apply('/Users/a1230101//Documents/GitHub/TimeDistributions/logs/bpi_challenge_2013_incidents.xes', 
+log = xes_importer.apply('/Users/alexhu/Documents/Github/TimeDistributions/logs/DomesticDeclarations.xes', 
     variant=variant, parameters=parameters)
 
 event_log_times = extract_times_event_log()
