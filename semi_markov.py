@@ -52,13 +52,16 @@ class SemiMarkov:
             states.remove(cheapest_node)
             label = "State " + str(i) + " out of " + str(len(states))
             self.reduce_node(cheapest_node, label, log)
-            self.graph.pop(cheapest_node)
+            if(cheapest_node != 'start' and cheapest_node != 'end'):
+                print("Deleting cheapest node : " + cheapest_node)
+                self.graph.pop(cheapest_node)
         
 
     def reduce_node(self, state, label, log):
         if ((state == 'start') or (state == 'end')):
             return
         else:
+            print("\n")
             print("Removing node " + state)
             # Calsulate self-loop time
             self_loop_time = MultiGauss([1], [Gauss(0,0)])
@@ -111,10 +114,10 @@ class SemiMarkov:
                         mean_log_time = mean_time_between_events(in_state,out_state,[state],log)
 
     def remove_transition(self, start, end):
-        if start != "start" and start != "end" and end != "start" and start != "start" :
+        if start != "start" and start != "end" and end != "start" and end != "end" :
             self.graph[start]["out_transitions"].pop(end)
             print("Removing out transition from " + start + " -> " +  end)
-        if end != "start" and end != "end" and start != "start" and start != "end" :
+        if start != "start" and start != "end" and end != "start" and end != "end" :
             self.graph[end]["in_transitions"].pop(start)
             print("Removing in transition from " + end + " -> " +  start)
 
