@@ -32,8 +32,9 @@ class SemiMarkov:
         self.transitions = transitions
         self.graph = {state : {"out_transitions" : {}, "in_transitions" : {}} for state in states}
         for transition in transitions :
-            print("Creating edge " + transition[0] + " -> " + transition[1])
+            print("Creating out_transition " + transition[0] + " -> " + transition[1])
             self.graph[transition[0]]["out_transitions"][transition[1]] = transition
+            print("Creating in_transition " + transition[1] + " -> " + transition[0])
             self.graph[transition[1]]["in_transitions"][transition[0]] = transition
     
     def get_cheapest_node(self,states) : 
@@ -72,6 +73,9 @@ class SemiMarkov:
             #  Add new transitions
             in_transitions = self.get_in_transitions(state)
             out_transitions = self.get_out_transitions(state)
+
+            print("Number of in_transitions of node " + state + " : " + str(len(in_transitions)))
+            print("Number of out_transition of node " + state + " : " + str(len(out_transitions)))
 
             for in_state, v in list(in_transitions.items()):
                 for out_state, vv in list(out_transitions.items()):
