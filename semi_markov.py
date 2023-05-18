@@ -32,9 +32,9 @@ class SemiMarkov:
         self.transitions = transitions
         self.graph = {state : {"out_transitions" : {}, "in_transitions" : {}} for state in states}
         for transition in transitions :
-            print("Creating out_transition " + transition[0] + " -> " + transition[1])
+            # print("Creating out_transition " + transition[0] + " -> " + transition[1])
             self.graph[transition[0]]["out_transitions"][transition[1]] = transition
-            print("Creating in_transition " + transition[1] + " -> " + transition[0])
+            # print("Creating in_transition " + transition[1] + " -> " + transition[0])
             self.graph[transition[1]]["in_transitions"][transition[0]] = transition
     
     def get_cheapest_node(self,states) : 
@@ -48,87 +48,111 @@ class SemiMarkov:
         return cheapest_state
 
     def reduce_all(self, states, log):
-        for i in range(1,len(states)) :
+        state_size = len(states)
+        for i in range(1,state_size) :
             cheapest_node = self.get_cheapest_node(states)
             states.remove(cheapest_node)
-            label = "State " + str(i) + " out of " + str(len(states))
+            label = "State " + str(i) + " out of " + str(state_size)
             self.reduce_node(cheapest_node, label, log)
-            if(cheapest_node != 'start' and cheapest_node != 'end'):
-                print("Deleting cheapest node : " + cheapest_node)
-                self.graph.pop(cheapest_node)
-        
+            # if(cheapest_node != 'start' and cheapest_node != 'end'):
+                # print("Deleting cheapest node : " + cheapest_node)
+                # self.graph.pop(cheapest_node)     
 
     def reduce_node(self, state, label, log):
         if ((state == 'start') or (state == 'end')):
             return
-        else:
-            print("\n")
-            print("Removing node " + state)
-            # Calsulate self-loop time
-            self_loop_time = MultiGauss([1], [Gauss(0,0)])
-            self_loops = set()
+        
+        # print("\n")
+        # print("Removing node " + state)
+        # Calsulate self-loop time
+        self_loop_time = MultiGauss([1], [Gauss(0,0)])
+        self_loops = set()
 
-            self_loop_time = self.calculate_self_loop_time(state, 0.0001)
+        self_loop_time = self.calculate_self_loop_time(state, 0.0001)
 
-            #  Add new transitions
-            in_transitions = self.get_in_transitions(state)
-            out_transitions = self.get_out_transitions(state)
+        #  Add new transitions
+        in_transitions = self.get_in_transitions(state)
+        out_transitions = self.get_out_transitions(state)
 
-            print("Number of in_transitions of node " + state + " : " + str(len(in_transitions)))
-            print("Number of out_transition of node " + state + " : " + str(len(out_transitions)))
+        # print("Number of in_transitions of node " + state + " : " + str(len(in_transitions)))
+        # print("Number of out_transition of node " + state + " : " + str(len(out_transitions)))
+        count = 0
 
-            for in_state, v in list(in_transitions.items()):
-                for out_state, vv in list(out_transitions.items()):
-                    if in_state != out_state:
-                        print("in_state : " + str(v))
-                        print("out_state : " + str(vv))
+        # self.print_graph()
 
-                        p = self.get_probability(in_state, out_state)
-                        time = self.get_time(in_state, out_state)
+        for in_state, v in list(in_transitions.items()):
+            for out_state, vv in list(out_transitions.items()):
+                # print("In state : " + in_state)
+                # print("Out state : " + out_state)
+                print(count)
+                count+= 1
+                if in_state != out_state:
+                    # print("in_state : " + str(v))
+                    # print("out_state : " + str(vv))
 
-                        in_state_to_state_prob = self.get_probability(in_state,state)
-                        state_to_out_state_prob = self.get_probability(state,out_state)
-                        state_to_state_prob = self.get_probability(state,state)
+                    p = self.get_probability(in_state, out_state)
+                    time = self.get_time(in_state, out_state)
 
-                        print("in_state_to_state_prob : " + str(in_state_to_state_prob))
-                        print("state_to_out_state_prob : " + str(state_to_out_state_prob))
-                        print("state_to_state_prob : " + str(state_to_state_prob))
+                    in_state_to_state_prob = self.get_probability(in_state,state)
+                    state_to_out_state_prob = self.get_probability(state,out_state)
+                    state_to_state_prob = self.get_probability(state,state)
 
-                        new_prob = in_state_to_state_prob * state_to_out_state_prob/(1-state_to_state_prob)
+                    # print("in_state_to_state_prob : " + str(in_state_to_state_prob))
+                    # print("state_to_out_state_prob : " + str(state_to_out_state_prob))
+                    # print("state_to_state_prob : " + str(state_to_state_prob))
 
-                        all_p = p + new_prob
+                    new_prob = in_state_to_state_prob * state_to_out_state_prob/(1-state_to_state_prob)
 
-                        print("p : " + str(p))
-                        print("new_prob : " + str(new_prob))
-                        print("all_p : " + str(all_p))
-                        m1 = self.get_time(in_state, state)
-                        m2 = self.get_time(state, out_state)
-                        new_time = mult_gauss_convolution(m1,self_loop_time)
-                        new_time = mult_gauss_convolution(new_time, m2)
-                        all_time = mult_gauss_sum(time, new_time, p/all_p, new_prob/all_p)
+                    all_p = p + new_prob
 
-                        # removing the inwards and outwards transitions
-                        self.remove_transition(state, out_state)
-                        self.remove_transition(in_state, state)
+                    # print("p : " + str(p))
+                    # print("new_prob : " + str(new_prob))
+                    # print("all_p : " + str(all_p))
+                    m1 = self.get_time(in_state, state)
+                    m2 = self.get_time(state, out_state)
+                    new_time = mult_gauss_convolution(m1,self_loop_time)
+                    new_time = mult_gauss_convolution(new_time, m2)
+                    all_time = mult_gauss_sum(time, new_time, p/all_p, new_prob/all_p)
 
-                        new_transition = (in_state, out_state, all_p, all_time)
-                        # Add new transition
-                        self.add_out_state_transition(in_state,out_state,new_transition)
-                        self.add_in_state_transition(out_state,in_state,new_transition)
-                        mean_log_time = mean_time_between_events(in_state,out_state,[state],log)
+                    new_transition = (in_state, out_state, all_p, all_time)
+                    # Add new transition
+                    self.add_out_state_transition(in_state,out_state,new_transition)
+                    self.add_in_state_transition(out_state,in_state,new_transition)
+                    mean_log_time = mean_time_between_events(in_state,out_state,[state],log)
+                    # print("Removing out_state")
+                    self.remove_transition(state, out_state)
+            # print("Removing in_state")
+            # removing the inwards and outwards transitions
+            self.remove_transition(in_state, state)
+
+    # def print_graph(self):
+        # for state, item in self.graph.items() :
+            # print("State : " + state)
+            # print("Out Transitions : ", end="")
+            # for out_transition in self.graph[state]["out_transitions"]:
+                # print(" " + out_transition + "|", end="")
+            # print("")
+            # print("In Transitions : ", end="")
+            # for out_transition in self.graph[state]["in_transitions"]:
+                # print(" " + out_transition + "|", end="")
+            # print("\n")
+
 
     def remove_transition(self, start, end):
+        # print("Trying to remove " +  start + "->" + end)
         if start != "start" and start != "end" and end != "start" and end != "end" :
             self.graph[start]["out_transitions"].pop(end)
-            print("Removing out transition from " + start + " -> " +  end)
+            # print("Removing out transition from " + start + " -> " +  end)
         if start != "start" and start != "end" and end != "start" and end != "end" :
             self.graph[end]["in_transitions"].pop(start)
-            print("Removing in transition from " + end + " -> " +  start)
+            # print("Removing in transition from " + end + " -> " +  start)
 
     def add_out_state_transition(self, from_state, to_state, new_transition):
+        # print("Adding new out_state from " + from_state + " -> " + to_state)
         self.graph[from_state]["out_transitions"][to_state] = new_transition
 
     def add_in_state_transition(self, from_state, to_state ,new_transition):
+        # print("Adding new in_state from " + from_state + " -> " + to_state)
         self.graph[from_state]["in_transitions"][to_state] = new_transition
 
     def  calculate_self_loop_time(self, state, threshold):
