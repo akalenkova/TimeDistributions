@@ -106,7 +106,7 @@ variant = xes_importer.Variants.ITERPARSE
 parameters = {variant.value.Parameters.TIMESTAMP_SORT: True}
 log = xes_importer.apply('/Users/alexhu/Documents/Github/TimeDistributions/logs/DomesticDeclarations.xes', 
     variant=variant, parameters=parameters)
-for k in [1]:
+for k in [1,2,3,4]:
     start = time.time()
     log_for_discovery = deepcopy(log)
     times_dictionary = {}
