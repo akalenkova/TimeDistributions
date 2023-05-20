@@ -84,7 +84,6 @@ class SemiMarkov:
             for out_state, vv in list(out_transitions.items()):
                 # print("In state : " + in_state)
                 # print("Out state : " + out_state)
-                print(count)
                 count+= 1
                 if in_state != out_state:
                     # print("in_state : " + str(v))

@@ -97,8 +97,7 @@ def build_semi_markov(dfg, multi_gausses):
                 else:
                     transitions.add(tuple([key1, key2, dfg[key1,key2]/out_frequences[key1], 
                     multi_gausses["['" + str(key1) + "', '" + str(key2) + "']"]]))
-    print('DFG is built')
-    time.sleep(10)
+    time.sleep(1)
     return SemiMarkov(states, transitions)
 
 
@@ -191,10 +190,9 @@ for k in [1,2,3,4]:
     #     i += 1  
 
     # outputs the results
-    print("Number of transitions: " + str(len(semi_markov.transitions)))
+    # print("Number of transitions: " + str(len(semi_markov.transitions)))
     for transition in semi_markov.transitions:
         if transition[0] == 'start':
-            print(transition)
             multi_gauss = transition[3]
             multi_gauss.remove_zero()
             color = {
@@ -205,13 +203,13 @@ for k in [1,2,3,4]:
                 5: "tab:purple",
             }
             multi_gauss.plot_mult_gauss(range(-10,1000,1), label="Semi-Markov Model k="+str(k), color = color.get(k))
-            print()
-            print('Overall: ---------------')
-            print(multi_gauss.calculate_mean())
+            # print()
+            # print('Overall: ---------------')
+            # print(multi_gauss.calculate_mean())
 
     end = time.time()
-    print("Execution time for k=" + str(k))
-    print(end - start)
+    # print("Execution time for k=" + str(k))
+    print(str(k) + " " + str(end - start))
 
 """
 Approxiamting event log
@@ -222,17 +220,17 @@ for time in event_log_times:
     if time < 1000:
         filtered_event_log_times.append(time)
 #print(event_log_times)
-y, x, _ = plt.hist(filtered_event_log_times, bins=100, fc=(0, 1, 0, 0.4), density=True, label='Event log')
+# y, x, _ = plt.hist(filtered_event_log_times, bins=100, fc=(0, 1, 0, 0.4), density=True, label='Event log')
 #plt.xlabel('Waiting time in hours')
 #plt.ylabel('Probability')
 #kde_log = sm.nonparametric.KDEUnivariate(list(event_log_times))
 #kde_log.fit(bw=20, kernel='gau')  # Estimate the densities
 #plt.title('Event log time')
 #multi_gauss_log = fit_gauss(kde_log.support, kde_log.density, 'Event log')
-plt.xlim([-10, 1000])
-plt.legend(loc="upper right")
-plt.title('')
-plt.show()
+# plt.xlim([-10, 1000])
+# plt.legend(loc="upper right")
+# plt.title('')
+# plt.show()
 
 #plt.savefig('/Users/a1230101//Documents/GitHub/TimeDistributions/time_plots/DomesticDeclarations.pdf')
 
