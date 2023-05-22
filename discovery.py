@@ -96,14 +96,13 @@ def build_semi_markov(dfg, multi_gausses):
                 else:
                     transitions.add(tuple([key1, key2, dfg[key1,key2]/out_frequences[key1], 
                     multi_gausses["['" + str(key1) + "', '" + str(key2) + "']"]]))
-    print('DFG is built')
-    time.sleep(10)
+    time.sleep(1)
     return SemiMarkov(states, transitions)
 
 
 variant = xes_importer.Variants.ITERPARSE
 parameters = {variant.value.Parameters.TIMESTAMP_SORT: True}
-log = xes_importer.apply('/Users/a1230101//Documents/GitHub/TimeDistributions/logs/bpi_challenge_2013_incidents.xes', 
+log = xes_importer.apply('/Users/alexhu/Documents/Github/TimeDistributions/logs/DomesticDeclarations.xes', 
     variant=variant, parameters=parameters)
 
 event_log_times = extract_times_event_log()
@@ -112,7 +111,7 @@ for times in event_log_times:
     if times < 1000:
         filtered_event_log_times.append(times)
 
-for k in [1]:
+for k in [1,2,3,4]:
     start = time.time()
     log_for_discovery = deepcopy(log)
     times_dictionary = {}
@@ -175,8 +174,6 @@ for k in [1]:
 
 
     semi_markov = build_semi_markov(dfg, mult_gausses)
-    print("Number of states: " + str(len(semi_markov.states)))
-    print("Number of transitions: " + str(len(semi_markov.transitions)))
     states = deepcopy(semi_markov.states)
     i = 1
     for state in states:
@@ -189,7 +186,6 @@ for k in [1]:
 
     for transition in semi_markov.transitions:
         if transition[0] == 'start':
-            print(transition)
             multi_gauss = transition[3]
             multi_gauss.remove_zero()
             color = {
@@ -201,21 +197,10 @@ for k in [1]:
             }
 #            multi_gauss.truncate_gauss(0.05)
             multi_gauss.plot_trunc_mult_gauss(range(-10,400,1), label="Semi-Markov Model, order="+str(k), color = color.get(k))
-            print()
-            print('Overall: ---------------')
-            print("Mean:")
-            print(multi_gauss.calculate_mean())
 
-            print()
-            print("Mean metric:")
             log_mean = np.average(event_log_times)
             model_mean =  multi_gauss.calculate_mean()
             mean_accuracy = 1 - np.abs(log_mean-model_mean)/(log_mean+model_mean)
-            print(mean_accuracy)
-
-            print()
-            print("Peaks:")
-            print(multi_gauss.calculate_peaks())
             
             #print()
             #print("Chi square:")
@@ -225,14 +210,9 @@ for k in [1]:
             #print("Chi square metric:")
             #print(1-multi_gauss.calc_chi_square(20, filtered_event_log_times)/multi_gauss.calc_chi_square_uniform(20, filtered_event_log_times))
 
-            print()
-            print("KL Divergence:")
-            print(multi_gauss.calc_kl_divergence(20, filtered_event_log_times))
-            
-
     end = time.time()
-    print("Execution time for k=" + str(k))
-    print(end - start)
+
+    print(str(k) + "  " + str(end - start))
 
 """
 Plotting event log
@@ -242,17 +222,17 @@ Plotting event log
 
 
 #print(event_log_times)
-y, x, _ = plt.hist(filtered_event_log_times, bins=200, fc=(0, 1, 0, 0.4), density=True, label='Event log')
+# y, x, _ = plt.hist(filtered_event_log_times, bins=200, fc=(0, 1, 0, 0.4), density=True, label='Event log')
 #plt.xlabel('Waiting time in hours')
 #plt.ylabel('Probability')
 #kde_log = sm.nonparametric.KDEUnivariate(list(event_log_times))
 #kde_log.fit(bw=20, kernel='gau')  # Estimate the densities
 #plt.title('Event log time')
 #multi_gauss_log = fit_gauss(kde_log.support, kde_log.density, 'Event log')
-plt.xlim([-10, 400])
-plt.legend(loc="upper right")
-plt.title('')
-plt.show()
+# plt.xlim([-10, 400])
+# plt.legend(loc="upper right")
+# plt.title('')
+# plt.show()
 
 #plt.savefig('/Users/a1230101//Documents/GitHub/TimeDistributions/time_plots/DomesticDeclarations.pdf')
 
